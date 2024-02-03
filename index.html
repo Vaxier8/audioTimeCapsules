@@ -14,11 +14,26 @@
       height: 100vh;
       /* 100% of the viewport height */
     }
+    
+#updateLocation {
+    position: absolute; /* Position the button absolutely within the map */
+    top: 10px; /* Adjust these values to place the button where you want it */
+    right: 10px; /* For example, 10px from the top and right of the map container */
+    z-index: 1000; /* Ensure the button is above the map layer */
+    padding: 5px 10px; /* Optional: Adjust padding */
+    background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent background */
+    border: none; /* Optional: Adjust border */
+    cursor: pointer; /* Change cursor to pointer on hover over the button */
+    border-radius: 5px; /* Optional: Round corners */
+}
   </style>
 </head>
 
 <body class="relative h-screen overflow-hidden bg-gray-200">
   <div id="map"></div>
+  <div id="map">
+    <button id="updateLocation">Update My Location</button>
+</div>
 
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script src="script.js"></script>
