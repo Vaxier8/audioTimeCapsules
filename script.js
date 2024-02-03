@@ -1,35 +1,47 @@
-var map = L.map('map').setView([51.505, -0.09], 13); // Default view
+var map = L.map('map').setView([51.505, -0.09], 13); // Default initial view
 
-var map = L.map('map').setView([51.505, -0.09], 13);
-
-L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-    attribution: '© OpenStreetMap contributors, © CARTO'
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors'
 }).addTo(map);
 
-// Function to place a marker on the map at the user's location
-function placeMarker(position) {
+var userMarker; // Declare a variable for the marker outside the function
+
+// Function to update the marker's position on the map
+function updateMarker(position) {
     var userLat = position.coords.latitude;
     var userLong = position.coords.longitude;
-    var userLocation = L.latLng(userLat, userLong);
+    var newUserLocation = L.latLng(userLat, userLong);
 
-    map.setView(userLocation, 13); // Center the map on the user's location
+    if (userMarker) {
+        // If a marker already exists, just update its position
+        userMarker.setLatLng(newUserLocation);
+    } else {
+        // If no marker exists, create one and add it to the map
+        userMarker = L.marker(newUserLocation).addTo(map);
+        userMarker.bindPopup("You are here").openPopup();
+    }
 
-    var marker = L.marker(userLocation).addTo(map);
-    marker.bindPopup("You are here").openPopup();
+    map.setView(newUserLocation); // Center the map on the new location
 }
 
 // Function to handle errors in obtaining the geolocation
 function locationError(error) {
     console.warn(`ERROR(${error.code}): ${error.message}`);
-    alert('Error obtaining location, defaulting to initial view.');
+    alert('Error obtaining location. Please try again.');
 }
 
-// Request the user's location
+// Start watching the user's position
 if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(placeMarker, locationError);
+    navigator.geolocation.watchPosition(updateMarker, locationError, {
+        enableHighAccuracy: true,
+        maximumAge: 10000,
+        timeout: 5000
+    });
 } else {
     alert("Geolocation is not supported by this browser.");
 }
+
+
 
 // Call locateUser function to execute when the script loads
 locateUser();
