@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <title>OSM Time Capsule Map Demo</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
   <style>
     #map {
@@ -43,8 +43,7 @@
 <body class="relative h-screen overflow-hidden bg-gray-200">
   <div id="map"></div>
   <div id="map">
-    <button id="updateLocation">Update My Location</button>
-</div>
+  </div>
 
   <!-- Floating Button -->
   <div class="floating-btn">
@@ -53,57 +52,69 @@
       Open Camera
     </button>
   </div>
-    <!-- Update Location Button -->
-    <div class="floating-btn" style="bottom: 70px;">
-      <button id="updateLocation" onclick="getCurrentLocation()"
-        style="background: none; border: none; color: inherit; padding: 0; font: inherit; cursor: pointer;">
-        Update My Location
-      </button>
-    </div>
-  
+  <!-- Update Location Button -->
+  <div class="floating-btn" style="bottom: 70px;">
+    <button id="updateLocation" onclick="getCurrentLocation()"
+      style="background: none; border: none; color: inherit; padding: 0; font: inherit; cursor: pointer;">
+      Update My Location
+    </button>
+  </div>
+
 
 
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script src="script.js"></script>
 
-<video id="video" style="display:none;" width="640" height="480" autoplay></video>
-<canvas id="canvas" style="display:none;"></canvas>
+  <video id="video" style="display:none;" width="640" height="480" autoplay></video>
+  <canvas id="canvas" style="display:none;"></canvas>
 
   <script>
-  var video = document.getElementById('video');
-  var canvas = document.getElementById('canvas');
-  var context = canvas.getContext('2d');
-  var mediaStream = null;
-  
+    var video = document.getElementById('video');
+    var canvas = document.getElementById('canvas');
+    var context = canvas.getContext('2d');
+    var mediaStream = null;
+
     function openCamera() {
       navigator.mediaDevices.getUserMedia({ video: true })
-        .then(function(stream) {
-          var videoWindow = window.open("", "Camera", "width=650,height=490"); // Open a new window
-          var videoElement = videoWindow.document.createElement("video");
+        .then(function (stream) {
+          var videoElement = document.createElement("video");
           videoElement.setAttribute("autoplay", "");
           videoElement.setAttribute("width", "640");
           videoElement.setAttribute("height", "480");
-          videoWindow.document.body.appendChild(videoElement);
-          
+          document.body.appendChild(videoElement);
+
           videoElement.srcObject = stream;
           mediaStream = stream; // Keep a reference to the stream to stop it later
-          
-          videoElement.addEventListener('click', function() {
-            takePicture();
-            videoWindow.close(); // Close the window when you take a picture
+
+          videoElement.addEventListener('click', function () {
+            takePicture(videoElement);
           });
         })
-        .catch(function(error) {
+        .catch(function (error) {
           console.log("Error: ", error);
         });
     }
+
     // Function to take a picture
-    function takePicture() {
-      context.drawImage(video, 0, 0, 320, 240);
-      video.removeEventListener('click', takePicture); // Remove the event listener if you only want to take one picture
-      stopCamera(); // Call to stop the camera
+    function takePicture(videoElement) {
+      var canvas = document.createElement('canvas');
+      canvas.width = videoElement.videoWidth;
+      canvas.height = videoElement.videoHeight;
+      var context = canvas.getContext('2d');
+      context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+
+      // Save the image as a file (you may need to adjust this part based on your requirements)
+      var imgData = canvas.toDataURL('image/png');
+      var link = document.createElement('a');
+      link.href = imgData;
+      link.download = 'photo.png';
+      link.click();
+
+      // Stop the video stream
+      stopCamera();
     }
-    
+
+
     // Function to stop the camera
     function stopCamera() {
       if (mediaStream) {
