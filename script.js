@@ -2,12 +2,8 @@ var map = L.map('map').setView([51.505, -0.09], 13); // Default view
 
 var map = L.map('map').setView([51.505, -0.09], 13);
 
-L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}.{ext}', {
-    attribution: 'Map tiles by Stamen Design, under CC BY 3.0. Data by OpenStreetMap, under ODbL.',
-    subdomains: 'abcd',
-    minZoom: 0,
-    maxZoom: 20,
-    ext: 'png'
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    attribution: '© OpenStreetMap contributors, © CARTO'
 }).addTo(map);
 
 // Function to place a marker on the map at the user's location
