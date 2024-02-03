@@ -21,8 +21,20 @@ function updateMarker(position) {
 
 // Function to handle errors in obtaining the geolocation
 function locationError(error) {
-    console.warn(`ERROR(${error.code}): ${error.message}`);
-    alert('Error obtaining location. Please try again.');
+    switch(error.code) {
+        case error.PERMISSION_DENIED:
+            console.error("Location permission was denied.");
+            break;
+        case error.POSITION_UNAVAILABLE:
+            console.error("Location information is unavailable.");
+            break;
+        case error.TIMEOUT:
+            console.error("The request to get user location timed out.");
+            break;
+        default:
+            console.error("An unknown error occurred.");
+            break;
+    }
 }
 
 // Start watching the user's position
