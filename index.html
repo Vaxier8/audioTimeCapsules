@@ -6,6 +6,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <title>OSM Time Capsule Map Demo</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
   <style>
     #map {
       width: 100%;
@@ -50,6 +53,15 @@
       Open Camera
     </button>
   </div>
+    <!-- Update Location Button -->
+    <div class="floating-btn" style="bottom: 70px;">
+      <button id="updateLocation" onclick="getCurrentLocation()"
+        style="background: none; border: none; color: inherit; padding: 0; font: inherit; cursor: pointer;">
+        Update My Location
+      </button>
+    </div>
+  
+
 
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script src="script.js"></script>
