@@ -33,10 +33,10 @@ function locationError(error) {
 // Start watching the user's position
 if (navigator.geolocation) {
     navigator.geolocation.watchPosition(updateMarker, locationError, {
-        enableHighAccuracy: true,
-        maximumAge: 10000,
-        timeout: 5000
-    });
+        enableHighAccuracy: true, // Consider testing with false as well
+        maximumAge: 5000,
+        timeout: 15000 // Increase timeout to allow more time for location updates
+    });    
 } else {
     alert("Geolocation is not supported by this browser.");
 }
