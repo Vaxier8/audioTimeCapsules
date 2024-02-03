@@ -17,19 +17,22 @@
     .floating-btn {
       position: fixed;
       bottom: 20px;
-      /* Adjust the distance from the bottom */
       left: 50%;
       transform: translateX(-50%);
       background-color: #4CAF50;
       color: white;
       padding: 10px 20px;
       border: none;
-      border-radius: 5px;
+      border-radius: 25px;
+      /* Increase the border-radius for rounded edges */
       cursor: pointer;
-      opacity: 1;
-      /* Set initial visibility */
-      transition: opacity 0.3s ease;
-      /* Add a transition effect */
+      z-index: 1000;
+      /* Ensure the button is above the map */
+      font-size: 16px;
+      /* Adjust font size for better visibility */
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
   </style>
 </head>
@@ -39,7 +42,10 @@
 
   <!-- Floating Button -->
   <div class="floating-btn">
-    <button onclick="openCamera()">Open Camera</button>
+    <button onclick="openCamera()"
+      style="background: none; border: none; color: inherit; padding: 0; font: inherit; cursor: pointer;">
+      Open Camera
+    </button>
   </div>
 
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
@@ -63,6 +69,8 @@
       maxZoom: 20,
       ext: 'png'
     }).addTo(map);
+
+    // Your existing watchPosition code here...
   </script>
 </body>
 
