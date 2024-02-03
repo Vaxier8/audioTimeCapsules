@@ -1,83 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    <title>Bottom Overlay Menu</title>
-    <link href="https://cdn.tailwindcss.com" rel="stylesheet" />
-    
-      <title>OSM Time Capsule Map Demo</title>
-      <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-      <link rel="stylesheet" href="style.css" />
-  
-  </head>
-  <body class="relative h-screen overflow-hidden bg-gray-200">
-    <div id="map" style="width: 600px; height: 400px;"></div>
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    <script src="script.js"></script>
-    <!-- Overlaying Bottom Menu -->
-    <div class="fixed inset-x-0 bottom-0 z-50 bg-white shadow-lg">
-      <div class="flex justify-between items-center p-4">
-        <!-- Menu Item 1 -->
-        <div class="text-center">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-6 w-6 mx-auto"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M5 3v4M3 5h4m10 0h4M19 3v4m-7 13v4m-2 0h4M3 19v4m0-2h4m10 0h4m-2 0v4M5 5l14 14"
-            />
-          </svg>
-          <span class="block text-xs mt-1">Explore</span>
-        </div>
 
-        <!-- Menu Item 2 (Central Button) -->
-        <div
-          class="bg-blue-500 text-white rounded-full p-4 shadow-lg transform translate-y-1/2"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-8 w-8"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M12 4v16m8-8H4"
-            />
-          </svg>
-        </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <title>OSM Time Capsule Map Demo</title>
+  <style>
+    #map {
+      width: 600px;
+      height: 400px;
+    }
+  </style>
+</head>
 
-        <!-- Menu Item 3 -->
-        <div class="text-center">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-6 w-6 mx-auto"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M17 20h5v-2a3 3 0 00-3-3H5a3 3 0 00-3 3v2h5m0 0a3 3 0 006 0m-6 0V6m6 14V10"
-            />
-          </svg>
-          <span class="block text-xs mt-1">Profile</span>
-        </div>
+<body class="relative h-screen overflow-hidden bg-gray-200">
+  <div id="map"></div>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="script.js"></script>
+
+  <!-- Overlaying Bottom Menu -->
+  <div class="fixed inset-x-0 bottom-0 z-50 bg-white shadow-lg">
+    <div class="flex justify-between items-center p-4">
+      <!-- Menu Item 1 -->
+      <div class="text-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mx-auto" fill="none" viewBox="0 0 24 24"
+          stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M5 3v4M3 5h4m10 0h4M19 3v4m-7 13v4m-2 0h4M3 19v4m0-2h4m10 0h4m-2 0v4M5 5l14 14" />
+        </svg>
+        <span class="block text-xs mt-1">Explore</span>
+      </div>
+
+      <!-- Menu Item 2 (Central Button) -->
+      <div class="bg-blue-500 text-white rounded-full p-4 shadow-lg transform translate-y-1/2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        </svg>
+      </div>
+
+      <!-- Menu Item 3 -->
+      <div class="text-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mx-auto" fill="none" viewBox="0 0 24 24"
+          stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M17 20h5v-2a3 3 0 00-3-3H5a3 3 0 00-3 3v2h5m0 0a3 3 0 006 0m-6 0V6m6 14V10" />
+        </svg>
+        <span class="block text-xs mt-1">Profile</span>
       </div>
     </div>
-  </body>
+  </div>
+</body>
+
 </html>
