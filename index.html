@@ -54,7 +54,8 @@
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script src="script.js"></script>
 
-  <!-- Overlaying Bottom Menu -->
+<video id="video" style="display:none;" width="640" height="480" autoplay></video>
+<canvas id="canvas" style="display:none;"></canvas>
 
   <script>
   var video = document.getElementById('video');
@@ -65,9 +66,20 @@
     function openCamera() {
       navigator.mediaDevices.getUserMedia({ video: true })
         .then(function(stream) {
-          video.srcObject = stream;
+          var videoWindow = window.open("", "Camera", "width=650,height=490"); // Open a new window
+          var videoElement = videoWindow.document.createElement("video");
+          videoElement.setAttribute("autoplay", "");
+          videoElement.setAttribute("width", "640");
+          videoElement.setAttribute("height", "480");
+          videoWindow.document.body.appendChild(videoElement);
+          
+          videoElement.srcObject = stream;
           mediaStream = stream; // Keep a reference to the stream to stop it later
-          video.addEventListener('click', takePicture);
+          
+          videoElement.addEventListener('click', function() {
+            takePicture();
+            videoWindow.close(); // Close the window when you take a picture
+          });
         })
         .catch(function(error) {
           console.log("Error: ", error);
