@@ -10,10 +10,24 @@
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
   <style>
-    #map {
+    #map-container {
+      position: relative;
       width: 100%;
       height: 100vh;
       /* 100% of the viewport height */
+    }
+
+    #map,
+    #video-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    #video-container {
+      display: none;
     }
 
     /* Floating Button Style */
@@ -41,17 +55,19 @@
 </head>
 
 <body class="relative h-screen overflow-hidden bg-gray-200">
-  <div id="map"></div>
-  <div id="map">
+  <div id="map-container">
+    <div id="map"></div>
+    <div id="video-container"></div>
   </div>
 
   <!-- Floating Button -->
   <div class="floating-btn">
-    <button onclick="openCamera()"
+    <button onclick="toggleCameraVisibility()"
       style="background: none; border: none; color: inherit; padding: 0; font: inherit; cursor: pointer;">
       Open Camera
     </button>
   </div>
+
   <!-- Update Location Button -->
   <div class="floating-btn" style="bottom: 70px;">
     <button id="updateLocation" onclick="getCurrentLocation()"
@@ -59,8 +75,6 @@
       Update My Location
     </button>
   </div>
-
-
 
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script src="script.js"></script>
@@ -81,7 +95,7 @@
           videoElement.setAttribute("autoplay", "");
           videoElement.setAttribute("width", "640");
           videoElement.setAttribute("height", "480");
-          document.body.appendChild(videoElement);
+          document.getElementById('video-container').appendChild(videoElement);
 
           videoElement.srcObject = stream;
           mediaStream = stream; // Keep a reference to the stream to stop it later
@@ -112,8 +126,9 @@
 
       // Stop the video stream
       stopCamera();
+      // Show the map
+      toggleCameraVisibility();
     }
-
 
     // Function to stop the camera
     function stopCamera() {
@@ -121,10 +136,27 @@
         mediaStream.getTracks().forEach(track => track.stop());
       }
       video.srcObject = null;
+      // Close the video container
+      document.getElementById('video-container').innerHTML = '';
     }
 
     // Event listener for the button
-    document.getElementById('openCameraBtn').addEventListener('click', openCamera);
+    function toggleCameraVisibility() {
+      var mapContainer = document.getElementById('map-container');
+      var map = document.getElementById('map');
+      var videoContainer = document.getElementById('video-container');
+
+      if (map.style.display === 'none') {
+        map.style.display = 'block';
+        videoContainer.style.display = 'none';
+        // Stop the video stream when switching back to the map
+        stopCamera();
+      } else {
+        map.style.display = 'none';
+        videoContainer.style.display = 'block';
+        openCamera();
+      }
+    }
 
     // Your existing Leaflet map initialization code
     var map = L.map('map').setView([51.505, -0.09], 13);
