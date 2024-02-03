@@ -6,26 +6,34 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <title>OSM Time Capsule Map Demo</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <style>
     #map {
       width: 100%;
       height: 100vh;
       /* 100% of the viewport height */
     }
-    
-#updateLocation {
-    position: absolute; /* Position the button absolutely within the map */
-    top: 10px; /* Adjust these values to place the button where you want it */
-    right: 10px; /* For example, 10px from the top and right of the map container */
-    z-index: 1000; /* Ensure the button is above the map layer */
-    padding: 5px 10px; /* Optional: Adjust padding */
-    background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent background */
-    border: none; /* Optional: Adjust border */
-    cursor: pointer; /* Change cursor to pointer on hover over the button */
-    border-radius: 5px; /* Optional: Round corners */
-}
+
+    /* Floating Button Style */
+    .floating-btn {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 25px;
+      /* Increase the border-radius for rounded edges */
+      cursor: pointer;
+      z-index: 1000;
+      /* Ensure the button is above the map */
+      font-size: 16px;
+      /* Adjust font size for better visibility */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
   </style>
 </head>
 
@@ -35,11 +43,67 @@
     <button id="updateLocation">Update My Location</button>
 </div>
 
+  <!-- Floating Button -->
+  <div class="floating-btn">
+    <button onclick="openCamera()"
+      style="background: none; border: none; color: inherit; padding: 0; font: inherit; cursor: pointer;">
+      Open Camera
+    </button>
+  </div>
+
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script src="script.js"></script>
 
   <!-- Overlaying Bottom Menu -->
+
+  <script>
+  var video = document.getElementById('video');
+  var canvas = document.getElementById('canvas');
+  var context = canvas.getContext('2d');
+  var mediaStream = null;
   
+    function openCamera() {
+      navigator.mediaDevices.getUserMedia({ video: true })
+        .then(function(stream) {
+          video.srcObject = stream;
+          mediaStream = stream; // Keep a reference to the stream to stop it later
+          video.addEventListener('click', takePicture);
+        })
+        .catch(function(error) {
+          console.log("Error: ", error);
+        });
+    }
+    // Function to take a picture
+    function takePicture() {
+      context.drawImage(video, 0, 0, 320, 240);
+      video.removeEventListener('click', takePicture); // Remove the event listener if you only want to take one picture
+      stopCamera(); // Call to stop the camera
+    }
+    
+    // Function to stop the camera
+    function stopCamera() {
+      if (mediaStream) {
+        mediaStream.getTracks().forEach(track => track.stop());
+      }
+      video.srcObject = null;
+    }
+
+    // Event listener for the button
+    document.getElementById('openCameraBtn').addEventListener('click', openCamera);
+
+    // Your existing Leaflet map initialization code
+    var map = L.map('map').setView([51.505, -0.09], 13);
+
+    L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}.{ext}', {
+      attribution: 'Map tiles by Stamen Design, under CC BY 3.0. Data by OpenStreetMap, under ODbL.',
+      subdomains: 'abcd',
+      minZoom: 0,
+      maxZoom: 20,
+      ext: 'png'
+    }).addTo(map);
+
+    // Your existing watchPosition code here...
+  </script>
 </body>
 
 </html>
