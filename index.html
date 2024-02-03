@@ -54,10 +54,39 @@
   <!-- Overlaying Bottom Menu -->
 
   <script>
-    // Function to open the camera (replace with your actual logic)
+  var video = document.getElementById('video');
+  var canvas = document.getElementById('canvas');
+  var context = canvas.getContext('2d');
+  var mediaStream = null;
+  
     function openCamera() {
-      alert('Camera opened!');
+      navigator.mediaDevices.getUserMedia({ video: true })
+        .then(function(stream) {
+          video.srcObject = stream;
+          mediaStream = stream; // Keep a reference to the stream to stop it later
+          video.addEventListener('click', takePicture);
+        })
+        .catch(function(error) {
+          console.log("Error: ", error);
+        });
     }
+    // Function to take a picture
+    function takePicture() {
+      context.drawImage(video, 0, 0, 320, 240);
+      video.removeEventListener('click', takePicture); // Remove the event listener if you only want to take one picture
+      stopCamera(); // Call to stop the camera
+    }
+    
+    // Function to stop the camera
+    function stopCamera() {
+      if (mediaStream) {
+        mediaStream.getTracks().forEach(track => track.stop());
+      }
+      video.srcObject = null;
+    }
+
+    // Event listener for the button
+    document.getElementById('openCameraBtn').addEventListener('click', openCamera);
 
     // Your existing Leaflet map initialization code
     var map = L.map('map').setView([51.505, -0.09], 13);
