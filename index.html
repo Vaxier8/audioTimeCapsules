@@ -1,176 +1,216 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <title>OSM Time Capsule Map Demo</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-  <title>OSM Time Capsule Map Demo</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <style>
+      #map-container {
+        position: relative;
+        width: 100%;
+        height: 100vh;
+        /* 100% of the viewport height */
+      }
 
-  <style>
-    #map-container {
-      position: relative;
-      width: 100%;
-      height: 100vh;
-      /* 100% of the viewport height */
-    }
+      #map,
+      #video-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
 
-    #map,
-    #video-container {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-    }
+      #video-container {
+        display: none;
+      }
 
-    #video-container {
-      display: none;
-    }
+      /* Floating Button Style */
+      .floating-btn {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #4caf50;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 25px;
+        /* Increase the border-radius for rounded edges */
+        cursor: pointer;
+        z-index: 1000;
+        /* Ensure the button is above the map */
+        font-size: 16px;
+        /* Adjust font size for better visibility */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    </style>
+  </head>
 
-    /* Floating Button Style */
-    .floating-btn {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background-color: #4CAF50;
-      color: white;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 25px;
-      /* Increase the border-radius for rounded edges */
-      cursor: pointer;
-      z-index: 1000;
-      /* Ensure the button is above the map */
-      font-size: 16px;
-      /* Adjust font size for better visibility */
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-  </style>
-</head>
+  <body class="relative h-screen overflow-hidden bg-gray-200">
+    <div id="map-container">
+      <div id="map"></div>
+      <div id="video-container"></div>
+    </div>
 
-<body class="relative h-screen overflow-hidden bg-gray-200">
-  <div id="map-container">
-    <div id="map"></div>
-    <div id="video-container"></div>
-  </div>
+    <!-- Floating Button -->
+    <div class="floating-btn">
+      <button
+        onclick="toggleCameraVisibility()"
+        style="
+          background: none;
+          border: none;
+          color: inherit;
+          padding: 0;
+          font: inherit;
+          cursor: pointer;
+        "
+      >
+        Open Camera
+      </button>
+    </div>
 
-  <!-- Floating Button -->
-  <div class="floating-btn">
-    <button onclick="toggleCameraVisibility()"
-      style="background: none; border: none; color: inherit; padding: 0; font: inherit; cursor: pointer;">
-      Open Camera
-    </button>
-  </div>
+    <!-- Update Location Button -->
+    <div class="floating-btn" style="bottom: 70px">
+      <button
+        id="updateLocation"
+        onclick="getCurrentLocation()"
+        style="
+          background: none;
+          border: none;
+          color: inherit;
+          padding: 0;
+          font: inherit;
+          cursor: pointer;
+        "
+      >
+        Update My Location
+      </button>
+    </div>
 
-  <!-- Update Location Button -->
-  <div class="floating-btn" style="bottom: 70px;">
-    <button id="updateLocation" onclick="getCurrentLocation()"
-      style="background: none; border: none; color: inherit; padding: 0; font: inherit; cursor: pointer;">
-      Update My Location
-    </button>
-  </div>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="script.js"></script>
 
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-  <script src="script.js"></script>
+    <video
+      id="video"
+      style="display: none"
+      width="640"
+      height="480"
+      autoplay
+    ></video>
+    <canvas id="canvas" style="display: none"></canvas>
 
-  <video id="video" style="display:none;" width="640" height="480" autoplay></video>
-  <canvas id="canvas" style="display:none;"></canvas>
+    <script>
+      var video = document.getElementById("video");
+      var canvas = document.getElementById("canvas");
+      var context = canvas.getContext("2d");
+      var mediaStream = null;
 
-  <script>
-    var video = document.getElementById('video');
-    var canvas = document.getElementById('canvas');
-    var context = canvas.getContext('2d');
-    var mediaStream = null;
+      function openCamera() {
+        navigator.mediaDevices
+          .getUserMedia({ video: true })
+          .then(function (stream) {
+            var videoElement = document.createElement("video");
+            videoElement.setAttribute("autoplay", "");
+            videoElement.setAttribute("width", "640");
+            videoElement.setAttribute("height", "480");
+            document
+              .getElementById("video-container")
+              .appendChild(videoElement);
 
-    function openCamera() {
-      navigator.mediaDevices.getUserMedia({ video: true })
-        .then(function (stream) {
-          var videoElement = document.createElement("video");
-          videoElement.setAttribute("autoplay", "");
-          videoElement.setAttribute("width", "640");
-          videoElement.setAttribute("height", "480");
-          document.getElementById('video-container').appendChild(videoElement);
+            videoElement.srcObject = stream;
+            mediaStream = stream; // Keep a reference to the stream to stop it later
 
-          videoElement.srcObject = stream;
-          mediaStream = stream; // Keep a reference to the stream to stop it later
-
-          videoElement.addEventListener('click', function () {
-            takePicture(videoElement);
+            videoElement.addEventListener("click", function () {
+              takePicture(videoElement);
+            });
+          })
+          .catch(function (error) {
+            console.log("Error: ", error);
           });
-        })
-        .catch(function (error) {
-          console.log("Error: ", error);
-        });
-    }
-
-    // Function to take a picture
-    function takePicture(videoElement) {
-      var canvas = document.createElement('canvas');
-      canvas.width = videoElement.videoWidth;
-      canvas.height = videoElement.videoHeight;
-      var context = canvas.getContext('2d');
-      context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
-
-      // Save the image as a file (you may need to adjust this part based on your requirements)
-      var imgData = canvas.toDataURL('image/png');
-      var link = document.createElement('a');
-      link.href = imgData;
-      link.download = 'photo.png';
-      link.click();
-
-      // Stop the video stream
-      stopCamera();
-      // Show the map
-      toggleCameraVisibility();
-    }
-
-    // Function to stop the camera
-    function stopCamera() {
-      if (mediaStream) {
-        mediaStream.getTracks().forEach(track => track.stop());
       }
-      video.srcObject = null;
-      // Close the video container
-      document.getElementById('video-container').innerHTML = '';
-    }
 
-    // Event listener for the button
-    function toggleCameraVisibility() {
-      var mapContainer = document.getElementById('map-container');
-      var map = document.getElementById('map');
-      var videoContainer = document.getElementById('video-container');
+      // Function to take a picture
+      function takePicture(videoElement) {
+        var canvas = document.createElement("canvas");
+        canvas.width = videoElement.videoWidth;
+        canvas.height = videoElement.videoHeight;
+        var context = canvas.getContext("2d");
+        context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
 
-      if (map.style.display === 'none') {
-        map.style.display = 'block';
-        videoContainer.style.display = 'none';
-        // Stop the video stream when switching back to the map
+        // Convert the image to Base64
+        var imgData = canvas.toDataURL("image/png");
+
+        // Store the image data in session storage
+        sessionStorage.setItem("capturedImage", imgData);
+
+        // Stop the video stream and switch back to the map
         stopCamera();
-      } else {
-        map.style.display = 'none';
-        videoContainer.style.display = 'block';
-        openCamera();
+        toggleCameraVisibility();
       }
-    }
 
-    // Your existing Leaflet map initialization code
-    var map = L.map('map').setView([51.505, -0.09], 13);
+      // Function to stop the camera
+      function stopCamera() {
+        if (mediaStream) {
+          mediaStream.getTracks().forEach((track) => track.stop());
+        }
+        video.srcObject = null;
+        // Close the video container
+        document.getElementById("video-container").innerHTML = "";
+      }
 
-    L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}.{ext}', {
-      attribution: 'Map tiles by Stamen Design, under CC BY 3.0. Data by OpenStreetMap, under ODbL.',
-      subdomains: 'abcd',
-      minZoom: 0,
-      maxZoom: 20,
-      ext: 'png'
-    }).addTo(map);
+      // Event listener for the button
+      function toggleCameraVisibility() {
+        var mapContainer = document.getElementById("map-container");
+        var map = document.getElementById("map");
+        var videoContainer = document.getElementById("video-container");
 
-    // Your existing watchPosition code here...
-  </script>
-</body>
+        if (map.style.display === "none") {
+          map.style.display = "block";
+          videoContainer.style.display = "none";
+          // Stop the video stream when switching back to the map
+          stopCamera();
+        } else {
+          map.style.display = "none";
+          videoContainer.style.display = "block";
+          openCamera();
+        }
+      }
 
+      function displayStoredImage() {
+        var imgData = sessionStorage.getItem("capturedImage");
+        if (imgData) {
+          // Create an image element and set its source to the stored image data
+          var img = new document.createElement("img");
+          img.src = imgData;
+          document.body.appendChild(img); // Append the image to the body or any other container
+        } else {
+          console.log("No image stored in session");
+        }
+      }
+
+      // Your existing Leaflet map initialization code
+      var map = L.map("map").setView([51.505, -0.09], 13);
+
+      L.tileLayer(
+        "https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}.{ext}",
+        {
+          attribution:
+            "Map tiles by Stamen Design, under CC BY 3.0. Data by OpenStreetMap, under ODbL.",
+          subdomains: "abcd",
+          minZoom: 0,
+          maxZoom: 20,
+          ext: "png",
+        }
+      ).addTo(map);
+
+      // Your existing watchPosition code here...
+    </script>
+  </body>
 </html>
