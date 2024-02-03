@@ -144,14 +144,16 @@
         var context = canvas.getContext("2d");
         context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
 
-        // Convert the image to Base64
+        // Save the image as a file (you may need to adjust this part based on your requirements)
         var imgData = canvas.toDataURL("image/png");
+        var link = document.createElement("a");
+        link.href = imgData;
+        link.download = "photo.png";
+        link.click();
 
-        // Store the image data in session storage
-        sessionStorage.setItem("capturedImage", imgData);
-
-        // Stop the video stream and switch back to the map
+        // Stop the video stream
         stopCamera();
+        // Show the map
         toggleCameraVisibility();
       }
 
@@ -163,7 +165,6 @@
         video.srcObject = null;
         // Close the video container
         document.getElementById("video-container").innerHTML = "";
-        displayStoredImage();
       }
 
       // Event listener for the button
@@ -181,18 +182,6 @@
           map.style.display = "none";
           videoContainer.style.display = "block";
           openCamera();
-        }
-      }
-
-      function displayStoredImage() {
-        var imgData = sessionStorage.getItem("capturedImage");
-        if (imgData) {
-          // Create an image element and set its source to the stored image data
-          var img = new document.createElement("img");
-          img.src = imgData;
-          document.body.appendChild(img); // Append the image to the body or any other container
-        } else {
-          console.log("No image stored in session");
         }
       }
 
