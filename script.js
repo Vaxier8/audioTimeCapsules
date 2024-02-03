@@ -8,21 +8,16 @@ var userMarker; // Declare a variable for the marker outside the function
 
 // Function to update the marker's position on the map
 function updateMarker(position) {
-    var userLat = position.coords.latitude;
-    var userLong = position.coords.longitude;
-    var newUserLocation = L.latLng(userLat, userLong);
+    var newUserLocation = L.latLng(position.coords.latitude, position.coords.longitude);
 
     if (userMarker) {
-        // If a marker already exists, just update its position
         userMarker.setLatLng(newUserLocation);
     } else {
-        // If no marker exists, create one and add it to the map
         userMarker = L.marker(newUserLocation).addTo(map);
-        userMarker.bindPopup("You are here").openPopup();
+        map.setView(newUserLocation, 13);
     }
-
-    map.setView(newUserLocation); // Center the map on the new location
 }
+
 
 // Function to handle errors in obtaining the geolocation
 function locationError(error) {
